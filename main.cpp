@@ -8,19 +8,22 @@
 #include "HW2_Visualizer.h"
 
 int main(int argc, char** argv) {
-    // SDL initialization and window setup are done in the HW2_VIZ constructor
+    // SDL initialization 
     HW2_VIZ viz;
 
-    // Instantiate FlightMap and add flights
+    // Creating a flight map and adding flights routes with their distances 
     FlightMap flightMap;
-    flightMap.addFlight("SCE", "PHL", 160); // Distance between SCE and PHL
-    flightMap.addFlight("SCE", "ORD", 640); // Distance between SCE and ORD
-    flightMap.addFlight("SCE", "EWR", 220); // Distance between SCE and EWR
+    // Distance between SCE and PHL
+    flightMap.addFlight("SCE", "PHL", 160); 
+    // Distance between SCE and ORD
+    flightMap.addFlight("SCE", "ORD", 640); 
+    // Distance between SCE and EWR
+    flightMap.addFlight("SCE", "EWR", 220); 
 
-    // Instantiate ATC object
+    // Creating a ATC object for managing the planes
     ATC atc;
 
-    // Instantiate plane objects and set their velocities as per the provided flight schedule
+    // Creating Airliner and General Aviation objects with specified routes and velocities
     Airliner aa1("AA", "SCE", "PHL", flightMap);
     Airliner aa2("UA", "SCE", "ORD", flightMap);
     Airliner ua1("UA", "SCE", "EWR", flightMap);
@@ -29,7 +32,7 @@ int main(int argc, char** argv) {
     GeneralAviation ga2("SCE", "EWR", flightMap);
     GeneralAviation ga3("SCE", "ORD", flightMap);
 
-
+    // Setting the velocities for each plane (miles per hour)
     aa1.setVel(470);
     aa2.setVel(515);
 
@@ -41,7 +44,7 @@ int main(int argc, char** argv) {
     ga3.setVel(180);
 
 
-    // Register planes with ATC
+    // Registering the planes with ATC for tracking and control
     atc.register_plane(&aa1);
     atc.register_plane(&aa2);
     atc.register_plane(&ua1);
@@ -50,29 +53,32 @@ int main(int argc, char** argv) {
     atc.register_plane(&ga2);
     atc.register_plane(&ga3);
 
-    // Pick a timestep within [10, 100], for this example we use 50 seconds
+    // Pick a timestep within [10, 100]
     double timestep = 10;
     bool running = true;
     while (running) {
-        // Handle SDL events
+        // Event handling loop for SDL 
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
-                running = false; // Set running to false to exit the loop
+                // Setting running to false to exit the loop
+                running = false; 
             }
         }
 
-        // Operate each plane and control traffic
+        // Updaitng the each plane's status and visualizing its position
         for (Plane* plane : atc.getRegisteredPlanes()) {
+            // Updating plane position based on velocity and time  step
             plane->operate(timestep);
+            // Updating the air traffic control
             atc.control_traffic();
-            // Visualize the plane's current position
+            // Visualizing the plane's current position
             viz.visualize_plane(plane->plane_type(), plane->getOrigin(), plane->getDestination(), plane->getPos());
         }
 
-        // Update the visualization with the timestep
+        // Update time step and visualization
         viz.update(timestep);
     }
-
-    return 0;
+    // Exit the program
+    return 0; 
 }
