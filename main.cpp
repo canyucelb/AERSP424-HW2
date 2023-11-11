@@ -21,13 +21,25 @@ int main(int argc, char** argv) {
     ATC atc;
 
     // Instantiate plane objects and set their velocities as per the provided flight schedule
-    Airliner aa1("AA", "SCE", "PHL", 470, flightMap);
-    Airliner aa2("AA", "SCE", "ORD", 500, flightMap);
-    Airliner ua1("UA", "SCE", "EWR", 480, flightMap);
-    Airliner ua2("UA", "SCE", "ORD", 515, flightMap);
-    GeneralAviation ga1("SCE", "PHL", 140, flightMap);
-    GeneralAviation ga2("SCE", "EWR", 160, flightMap);
-    GeneralAviation ga3("SCE", "ORD", 180, flightMap);
+    Airliner aa1("AA", "SCE", "PHL", flightMap);
+    Airliner aa2("UA", "SCE", "ORD", flightMap);
+    Airliner ua1("UA", "SCE", "EWR", flightMap);
+    Airliner ua2("AA", "SCE", "ORD", flightMap);
+    GeneralAviation ga1("SCE", "PHL", flightMap);
+    GeneralAviation ga2("SCE", "EWR", flightMap);
+    GeneralAviation ga3("SCE", "ORD", flightMap);
+
+
+    aa1.setVel(470);
+    aa2.setVel(515);
+
+    ua1.setVel(480);
+    ua2.setVel(500);
+
+    ga1.setVel(140);
+    ga2.setVel(160);
+    ga3.setVel(180);
+
 
     // Register planes with ATC
     atc.register_plane(&aa1);
@@ -39,14 +51,14 @@ int main(int argc, char** argv) {
     atc.register_plane(&ga3);
 
     // Pick a timestep within [10, 100], for this example we use 50 seconds
-    double timestep = 50;
-
-    // Simulation loop
-    while (!viz.quit) {
+    double timestep = 10;
+    bool running = true;
+    while (running) {
         // Handle SDL events
-        while (SDL_PollEvent(&viz.event)) {
-            if (viz.event.type == SDL_QUIT) {
-                viz.quit = true;
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false; // Set running to false to exit the loop
             }
         }
 
@@ -61,13 +73,6 @@ int main(int argc, char** argv) {
         // Update the visualization with the timestep
         viz.update(timestep);
     }
-
-    // Clean up SDL resources
-    SDL_DestroyTexture(viz.texture);
-    SDL_FreeSurface(viz.image);
-    SDL_DestroyRenderer(viz.renderer);
-    SDL_DestroyWindow(viz.win);
-    SDL_Quit();
 
     return 0;
 }
